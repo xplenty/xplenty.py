@@ -105,4 +105,5 @@ job_id = 235
 job = client.stop_job(job_id)
 print job.status
 ```
+## License
 Released under the [MIT license](http://www.opensource.org/licenses/mit-license.php).
