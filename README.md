@@ -10,24 +10,18 @@ account_id ="MyAccountID"
 api_key = "V4eyfgNqYcSasXGhzNxS"
 client = XplentyClient(account_id,api_key)
 ```
-### List the Cluster Plans
-
-A cluster plan is a definition of a cluster type, which includes the number of nodes in the cluster and its pricing. Cluster plan details can be viewed in the Xplenty web application.
-After you've determined which cluster plan is appropriate for your needs, use this method to retrieve the cluster plan ID. The cluster plan ID can then be used when creating a new cluster.
-```python
-plans = client.plans
-for plan in plans:
-    print plan.id , plan.name
-```
 ### Create a Cluster
 
-This method creates a new cluster. A cluster is a group of machines ("nodes") allocated to your account. The number of nodes in the cluster is determined by the "plan_id" value that you supply to the call. While the cluster is active, only your account's users can run jobs on the cluster.
+This method creates a new cluster. A cluster is a group of machines ("nodes") allocated to your account. The number of nodes in the cluster is determined by the "nodes" value that you supply to the call. While the cluster is active, only your account's users can run jobs on the cluster. 
 You will need to provide an active cluster when starting a new job. Save the cluster ID value returned in the response "id" field. You will use the value to refer to this cluster in subsequent API calls.
 ```python
-plan_id = 1
+cluster_type = "production"
+nodes = 2
 name ="New Cluster #199999"
 description ="New Cluster's Description"
-cluster = client.create_cluster(plan_id, name, description)
+terminate_on_idle = False
+time_to_idle = 3600
+cluster = client.create_cluster(cluster_type, nodes, name, description, terminate_on_idle, time_to_idle)
 print cluster.id
 ```
 ### List All Clusters
