@@ -164,25 +164,13 @@ class BaseModel(object):
         return d
     
 
-
-class Plan(BaseModel):
-    """Xplenty Cluster Plan."""
-
-    _strs = ['name']
-    _ints = ['id']
-    _pks = ['id']
-
-    def __repr__(self):
-        return "<Plan '{0}'>".format(self.name)
-    
-    
-
 class Cluster(BaseModel):
     """Xplenty Cluster."""
 
-    _strs = ['name','description','status','url']
-    _ints = ['id','owner_id','plan_id','running_jobs_count']
-    _dates = ['created_at','updated_at']
+    _strs = ['name','description','status','type', 'url']
+    _ints = ['id','owner_id','nodes', 'running_jobs_count', 'time_to_idle']
+    _dates = ['created_at','updated_at', 'available_since', 'terminated_at']
+    _bools = ['terminate_on_idle']
     _pks = ['id']
 
     def __repr__(self):
@@ -196,7 +184,7 @@ class Job(BaseModel):
     _strs = ['errors','status','url']
     _ints = ['id','cluster_id','outputs_count','owner_id','package_id','runtime_in_seconds']
     _floats =['progress']
-    _dates = ['created_at','started_at','updated_at']
+    _dates = ['created_at','started_at','updated_at','failed_at','completed_at']
     _dicts = ['variables']
     _pks = ['id']
 
@@ -305,18 +293,6 @@ class XplentyClient(object):
         url = urljoin(_url , method )
         return url
     
-    def get_cluster_plans(self):
-        
-        method_path = 'cluster_plans'
-        url = self._join_url(method_path )
-        resp =self.get(url)
-        
-        
-        plans =  [Plan.new_from_dict(item, h=self) for item in resp]
-        
-        return plans
-    
-    
     def get_clusters(self):
         
         method_path = 'clusters'
@@ -343,11 +319,14 @@ class XplentyClient(object):
         return cluster
     
     
-    def create_cluster(self, plan_id, cluster_name, cluster_description):
+    def create_cluster(self, cluster_type, nodes, cluster_name, cluster_description, terminate_on_idle=False, time_to_idle=3600):
         cluster_info ={}
-        cluster_info["cluster[plan_id]"]= plan_id
-        cluster_info["cluster[name]"]= cluster_name
-        cluster_info["cluster[description]"]= cluster_description
+        cluster_info["cluster[type]"]= cluster_type
+        cluster_info["cluster[nodes]"]= nodes
+        cluster_info["cluster[name]"]= cluster_name if cluster_name else ""
+        cluster_info["cluster[description]"]= cluster_description if cluster_description else ""
+        cluster_info["cluster[terminate_on_idle]"]= 1 if terminate_on_idle else 0
+        cluster_info["cluster[time_to_idle]"]= time_to_idle
         method_path = 'clusters'
         url = self._join_url( method_path )
         resp =self.post(url,cluster_info)
@@ -414,11 +393,6 @@ class XplentyClient(object):
     
     
      
-
-    @property
-    def plans(self):
-        return self.get_cluster_plans()
-
     @property
     def clusters(self):
         return self.get_clusters()
