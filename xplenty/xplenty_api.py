@@ -260,13 +260,34 @@ class XplentyClient(object):
         try:
             resp = urllib2.urlopen(request)
             contents = resp.read()
+
         except urllib2.HTTPError, error:
             print error
             print error.read()
             contents =""
         
         return json.loads(contents)
-    
+
+        
+    def put(self,url):
+        print url 
+        request = urllib2.Request(url,headers=HEADERS)
+        base64string = base64.encodestring('%s' % (self.api_key)).replace('\n', '')
+        request.add_header("Authorization", "Basic %s" % base64string)
+        request.get_method = lambda: 'PUT'
+        contents =""
+        try:
+            resp = urllib2.urlopen(request)
+            contents = resp.read()
+
+        except urllib2.HTTPError, error:
+            print error
+            print error.read()
+            contents =""
+        
+        return json.loads(contents)
+
+
     def delete(self,url):
         print url 
         request = RequestWithMethod(url,'DELETE',headers=HEADERS)
@@ -319,7 +340,7 @@ class XplentyClient(object):
         return cluster
     
     
-    def create_cluster(self, cluster_type, nodes, cluster_name, cluster_description, terminate_on_idle=False, time_to_idle=3600):
+    def create_cluster(self, cluster_type, nodes, cluster_name, cluster_description, region, terminate_on_idle=False, time_to_idle=3600):
         cluster_info ={}
         cluster_info["cluster[type]"]= cluster_type
         cluster_info["cluster[nodes]"]= nodes
@@ -327,14 +348,28 @@ class XplentyClient(object):
         cluster_info["cluster[description]"]= cluster_description if cluster_description else ""
         cluster_info["cluster[terminate_on_idle]"]= 1 if terminate_on_idle else 0
         cluster_info["cluster[time_to_idle]"]= time_to_idle
+        #New entries available
+        cluster_info["cluster[region]"]=region if region else ""
         method_path = 'clusters'
         url = self._join_url( method_path )
         resp =self.post(url,cluster_info)
         cluster =  Cluster.new_from_dict(resp, h=self)
         
         return cluster
-    
-    
+
+    def update_cluster(self, cluster_id, nodes, cluster_name, cluster_description, terminate_on_idle=False, time_to_idle=3600):
+        cluster_info ={}
+        cluster_info["cluster[nodes]"]= nodes
+        cluster_info["cluster[name]"]= cluster_name if cluster_name else ""
+        cluster_info["cluster[description]"]= cluster_description if cluster_description else ""
+        cluster_info["cluster[terminate_on_idle]"]= 1 if terminate_on_idle else 0
+        cluster_info["cluster[time_to_idle]"]= time_to_idle
+        #New entries available
+        method_path = 'clusters/%s'%(str(cluster_id))
+        url = self._join_url( method_path )
+        resp =self.put(url,cluster_info)
+        cluster =  Cluster.new_from_dict(resp, h=self)
+
     
     def get_jobs(self):
         
@@ -404,6 +439,10 @@ class XplentyClient(object):
     @property
     def account_limits(self):
         return self.get_account_limits()
+
+    @property
+    def update_cluster(self):
+        return self.update_cluster()
   
     
     
