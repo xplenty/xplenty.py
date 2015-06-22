@@ -201,9 +201,21 @@ class AccountLimits(BaseModel):
 
     def __repr__(self):
         return "<AccountLimits '{0}'>".format(self.name)
-    
-    
-    
+
+
+class Package(BaseModel):
+    """Xplenty Package."""
+
+    _strs = ['name','description', 'url']
+    _ints = ['id','owner_id']
+    _floats =[]
+    _dates = ['created_at','updated_at']
+    _dicts = ['variables']
+    _pks = ['id']
+
+    def __repr__(self):
+        return "<Package '{0}'>".format(self.name)
+
 
 class RequestWithMethod(urllib2.Request):
     """Workaround for using DELETE with urllib2"""
@@ -391,7 +403,21 @@ class XplentyClient(object):
         
         return limit
     
+    def get_packages(self):
+        method_path = 'packages'
+        url = self._join_url(method_path)
+        resp = self.get(url)
+        packages = [Package.new_from_dict(item, h=self) for item in resp]
+
+        return packages
     
+    def get_package(self, id):
+        method_path = 'packages/%s' % id
+        url = self._join_url(method_path)
+        resp = self.get(url)
+        package = Package.new_from_dict(resp, h=self)
+
+        return package
      
     @property
     def clusters(self):
@@ -405,5 +431,6 @@ class XplentyClient(object):
     def account_limits(self):
         return self.get_account_limits()
   
-    
-    
+    @property
+    def packages(self):
+        return self.get_packages()
