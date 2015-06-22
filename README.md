@@ -5,7 +5,8 @@ The Xplenty PY is a python artifact that provides a simple wrapper for the [Xple
 ### Installation
 
 Via pip:
-```pip install git+git://github.com/xplenty/xplenty.py.git
+```bash
+pip install git+git://github.com/xplenty/xplenty.py.git
 ```
 
 ### Create an Xplenty Client Object
