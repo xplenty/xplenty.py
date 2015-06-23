@@ -2,10 +2,17 @@
 
 The Xplenty PY is a python artifact that provides a simple wrapper for the [Xplenty REST Api Tasks](https://github.com/xplenty/xplenty-api-doc). To use it, create an XplentyClient object and call its methods to access the Xplenty API. This page describes the available XplentyClient methods.
 
+### Installation
+
+Via pip:
+```bash
+pip install git+git://github.com/xplenty/xplenty.py.git
+```
+
 ### Create an Xplenty Client Object
 Pass your account ID and API key to the XplentyClient constructor.
 ```python
-from xplenty_api import XplentyClient
+from xplenty import XplentyClient
 account_id ="MyAccountID"
 api_key = "V4eyfgNqYcSasXGhzNxS"
 client = XplentyClient(account_id,api_key)
