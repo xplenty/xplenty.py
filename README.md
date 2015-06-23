@@ -89,6 +89,26 @@ job_id = 235
 job = client.stop_job(job_id)
 print job.status
 ```
+
+### List All Packages
+
+This method returns the list of packages that were created by users in your account.
+You can use this information to display your packages and their properties.
+```python
+packages = client.packages
+print "Number of packages:",len(packages)
+for package in packages:
+    print package.id, package.name, package.created_at
+```
+### Get Package Information
+
+This method returns the details of the package with the given ID.
+```python
+id = 85
+package = client.get_package(id)
+print package.name
+```
+
 ## Contributing
 
 1. Fork it
