@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
+import base64
+import json
+import logging
 import urllib
 import urllib2
-import base64
 from urlparse import urljoin
-import json
+
 from dateutil.parser import parse as parse_datetime
 
+
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.NullHandler())  # avoid "No handler found" warnings
 
 
 API_URL ="https://api.xplenty.com/%s/api/"   # %s is a placehoher for the account id
@@ -234,7 +239,7 @@ class RequestWithMethod(urllib2.Request):
 class XplentyClient(object):
     
     version = "1.0"
-    def __init__(self, account_id ="", api_key=""):
+    def __init__(self, account_id="", api_key=""):
         self.account_id = account_id
         self.api_key = api_key
         
@@ -244,7 +249,7 @@ class XplentyClient(object):
     
     
     def get(self,url):
-        print url 
+        logger.debug("GET %s", url)
         request = urllib2.Request(url,headers=HEADERS)
         base64string = base64.encodestring('%s' % (self.api_key)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
@@ -261,10 +266,10 @@ class XplentyClient(object):
         
         return json.loads(contents)
     
-    def post(self,url,data_dict={}):
-        print url 
-        encoded_data=urllib.urlencode(data_dict)
-        print encoded_data
+    def post(self, url, data_dict={}):
+        encoded_data = urllib.urlencode(data_dict)
+        logger.debug("POST %s, data %s", url, encoded_data)
+
         request = urllib2.Request(url,data=encoded_data,headers=HEADERS)
         base64string = base64.encodestring('%s' % (self.api_key)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
@@ -276,28 +281,25 @@ class XplentyClient(object):
             print error
             print error.read()
             contents =""
-        
+
         return json.loads(contents)
     
-    def delete(self,url):
-        print url 
-        request = RequestWithMethod(url,'DELETE',headers=HEADERS)
+    def delete(self, url):
+        logger.debug("DELETE %s", url)
+        request = RequestWithMethod(url, 'DELETE', headers=HEADERS)
         base64string = base64.encodestring('%s' % (self.api_key)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
-        
-        
-        print request.get_method()
-        
+
         contents =""
         try:
             resp = urllib2.urlopen(request)
             contents = resp.read()
-           
+
         except urllib2.HTTPError, error:
             print error
             print error.read()
             contents =""
-        
+
         return json.loads(contents)
     
     def _join_url(self, method):
@@ -306,7 +308,6 @@ class XplentyClient(object):
         return url
     
     def get_clusters(self):
-        
         method_path = 'clusters'
         url = self._join_url( method_path )
         resp =self.get(url)
