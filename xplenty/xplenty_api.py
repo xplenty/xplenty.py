@@ -13,10 +13,10 @@ logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())  # avoid "No handler found" warnings
 
 
-API_URL ="https://api.xplenty.com/%s/api/"   # %s is a placehoher for the account id
+API_URL = "https://api.xplenty.com/%s/api/"   # %s is a placehoher for the account id
 
 HEADERS = {
-		'Accept':   'application/vnd.xplenty+json',
+	'Accept': 'application/vnd.xplenty+json',
 }
 
 
@@ -99,7 +99,7 @@ class BaseModel(object):
     _dates = []
     _bools = []
     _dicts = []
-    _floats =[]
+    _floats = []
     _map = {}
     _pks = []
 
@@ -140,7 +140,6 @@ class BaseModel(object):
             except ValueError:
                 pass
 
-
     def dict(self):
         d = dict()
         for k in self.keys():
@@ -159,9 +158,9 @@ class BaseModel(object):
             float_keys=cls._floats,
             date_keys=cls._dates,
             bool_keys=cls._bools,
-            dict_keys= cls._dicts,
+            dict_keys=cls._dicts,
             object_map=cls._map,
-            _h = h
+            _h=h
         )
 
         d.__dict__.update(kwargs)
@@ -182,13 +181,12 @@ class Cluster(BaseModel):
         return "<Cluster '{0}'>".format(self.name)
 
 
-
 class Job(BaseModel):
     """Xplenty Job."""
 
     _strs = ['errors','status','url']
     _ints = ['id','cluster_id','outputs_count','owner_id','package_id','runtime_in_seconds']
-    _floats =['progress']
+    _floats = ['progress']
     _dates = ['created_at','started_at','updated_at','failed_at','completed_at']
     _dicts = ['variables']
     _pks = ['id']
@@ -200,9 +198,7 @@ class Job(BaseModel):
 class AccountLimits(BaseModel):
     """Xplenty Account limits."""
 
-
     _ints = ['limit','remaining']
-
 
     def __repr__(self):
         return "<AccountLimits '{0}'>".format(self.name)
@@ -213,7 +209,7 @@ class Package(BaseModel):
 
     _strs = ['name','description', 'url']
     _ints = ['id','owner_id']
-    _floats =[]
+    _floats = []
     _dates = ['created_at','updated_at']
     _dicts = ['variables']
     _pks = ['id']
@@ -236,6 +232,7 @@ class RequestWithMethod(urllib2.Request):
         else:
             return urllib2.Request.get_method(self)
 
+
 class XplentyClient(object):
 
     version = "1.0"
@@ -243,10 +240,8 @@ class XplentyClient(object):
         self.account_id = account_id
         self.api_key = api_key
 
-
     def __repr__(self):
         return '<Xplenty client at 0x%x>' % (id(self))
-
 
     def get(self,url):
         logger.debug("GET %s", url)
@@ -254,7 +249,7 @@ class XplentyClient(object):
         base64string = base64.encodestring('%s' % (self.api_key)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
 
-        contents =""
+        contents = ""
         try:
             resp = urllib2.urlopen(request)
             contents = resp.read()
@@ -262,7 +257,7 @@ class XplentyClient(object):
         except urllib2.HTTPError, error:
             print error
             print error.read()
-            contents =""
+            contents = ""
 
         return json.loads(contents)
 
@@ -270,17 +265,17 @@ class XplentyClient(object):
         encoded_data = urllib.urlencode(data_dict)
         logger.debug("POST %s, data %s", url, encoded_data)
 
-        request = urllib2.Request(url,data=encoded_data,headers=HEADERS)
+        request = urllib2.Request(url, data=encoded_data, headers=HEADERS)
         base64string = base64.encodestring('%s' % (self.api_key)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
-        contents =""
+        contents = ""
         try:
             resp = urllib2.urlopen(request)
             contents = resp.read()
         except urllib2.HTTPError, error:
             print error
             print error.read()
-            contents =""
+            contents = ""
 
         return json.loads(contents)
 
@@ -290,7 +285,7 @@ class XplentyClient(object):
         base64string = base64.encodestring('%s' % (self.api_key)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
 
-        contents =""
+        contents = ""
         try:
             resp = urllib2.urlopen(request)
             contents = resp.read()
@@ -298,7 +293,7 @@ class XplentyClient(object):
         except urllib2.HTTPError, error:
             print error
             print error.read()
-            contents =""
+            contents = ""
 
         return json.loads(contents)
 
@@ -310,7 +305,7 @@ class XplentyClient(object):
     def get_clusters(self):
         method_path = 'clusters'
         url = self._join_url( method_path )
-        resp =self.get(url)
+        resp = self.get(url)
         clusters =  [Cluster.new_from_dict(item, h=self) for item in resp]
 
         return clusters
@@ -318,7 +313,7 @@ class XplentyClient(object):
     def get_cluster(self,id):
         method_path = 'clusters/%s'%(str(id))
         url = self._join_url( method_path )
-        resp =self.get(url)
+        resp = self.get(url)
         cluster =  Cluster.new_from_dict(resp, h=self)
 
         return cluster
@@ -326,11 +321,10 @@ class XplentyClient(object):
     def terminate_cluster(self,id):
         method_path = 'clusters/%s'%(str(id))
         url = self._join_url( method_path )
-        resp =self.delete(url)
+        resp = self.delete(url)
         cluster =  Cluster.new_from_dict(resp, h=self)
 
         return cluster
-
 
     def create_cluster(self, cluster_type, nodes, cluster_name, cluster_description, terminate_on_idle=False, time_to_idle=3600):
         cluster_info ={}
@@ -342,18 +336,15 @@ class XplentyClient(object):
         cluster_info["cluster[time_to_idle]"]= time_to_idle
         method_path = 'clusters'
         url = self._join_url( method_path )
-        resp =self.post(url,cluster_info)
+        resp = self.post(url,cluster_info)
         cluster =  Cluster.new_from_dict(resp, h=self)
 
         return cluster
 
-
-
     def get_jobs(self):
-
         method_path = 'jobs'
         url = self._join_url(method_path )
-        resp =self.get(url)
+        resp = self.get(url)
 
         jobs =  [Job.new_from_dict(item, h=self) for item in resp]
 
@@ -370,14 +361,12 @@ class XplentyClient(object):
     def stop_job(self,id):
         method_path = 'jobs/%s'%(str(id))
         url = self._join_url( method_path )
-        resp =self.delete(url)
+        resp = self.delete(url)
 
         return resp
 
-
     def add_job(self, cluster_id, package_id, vars={}):
-
-        job_info ={}
+        job_info = {}
         job_info["job[cluster_id]"]= cluster_id
 				# We use job_id instead of package_id since that's how it is accepted on Xplenty's side
         job_info["job[job_id]"]= package_id
@@ -388,17 +377,16 @@ class XplentyClient(object):
 
         method_path = 'jobs'
         url = self._join_url( method_path )
-        resp =self.post(url,job_info)
+        resp = self.post(url,job_info)
         job =  Job.new_from_dict(resp, h=self)
 
         return job
-
 
     def get_account_limits(self):
 
         method_path = 'rate_limit_status'
         url = self._join_url( method_path )
-        resp =self.get(url)
+        resp = self.get(url)
 
         limit =  AccountLimits.new_from_dict(resp['limits'], h=self)
 
