@@ -8,6 +8,7 @@ from urlparse import urljoin
 
 from dateutil.parser import parse as parse_datetime
 
+from .exceptions import XplentyAPIException
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())  # avoid "No handler found" warnings
@@ -249,17 +250,12 @@ class XplentyClient(object):
         base64string = base64.encodestring('%s' % (self.api_key)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
 
-        contents = ""
         try:
             resp = urllib2.urlopen(request)
-            contents = resp.read()
-
         except urllib2.HTTPError, error:
-            print error
-            print error.read()
-            contents = ""
+            raise XplentyAPIException(error)
 
-        return json.loads(contents)
+        return json.loads(resp.read())
 
     def post(self, url, data_dict={}):
         encoded_data = urllib.urlencode(data_dict)
@@ -268,16 +264,13 @@ class XplentyClient(object):
         request = urllib2.Request(url, data=encoded_data, headers=HEADERS)
         base64string = base64.encodestring('%s' % (self.api_key)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
-        contents = ""
+
         try:
             resp = urllib2.urlopen(request)
-            contents = resp.read()
         except urllib2.HTTPError, error:
-            print error
-            print error.read()
-            contents = ""
+            raise XplentyAPIException(error)
 
-        return json.loads(contents)
+        return json.loads(resp.read())
 
     def delete(self, url):
         logger.debug("DELETE %s", url)
@@ -285,17 +278,12 @@ class XplentyClient(object):
         base64string = base64.encodestring('%s' % (self.api_key)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
 
-        contents = ""
         try:
             resp = urllib2.urlopen(request)
-            contents = resp.read()
-
         except urllib2.HTTPError, error:
-            print error
-            print error.read()
-            contents = ""
+            raise XplentyAPIException(error)
 
-        return json.loads(contents)
+        return json.loads(resp.read())
 
     def _join_url(self, method):
         _url = API_URL % ( self.account_id )
