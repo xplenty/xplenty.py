@@ -3,7 +3,7 @@ import json
 
 class XplentyAPIException(Exception):
     """
-    An exceprtion that is raised whenever an error occured.
+    An exception that is raised whenever an error occurred.
     """
     def __init__(self, http_error):
         self.http_error = http_error
