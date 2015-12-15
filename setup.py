@@ -5,8 +5,8 @@ except ImportError:
 import os
 
 this_dir = os.path.dirname(__file__)
-readme_filename = os.path.join(this_dir, 'README.md')
-requirements_filename = os.path.join(this_dir, 'requirements.txt')
+readme_filename = ('README.md')
+requirements_filename = ('requirements.txt')
 
 def get_project_path(*args):
     return os.path.abspath(os.path.join(this_dir, *args))
@@ -17,7 +17,7 @@ PACKAGE_AUTHOR = 'Xplenty'
 PACKAGE_AUTHOR_EMAIL = 'opensource@xplenty.com'
 PACKAGE_URL = 'https://github.com/xplenty/xplenty.py'
 PACKAGES = find_packages(get_project_path())
-PACKAGE_LICENSE = 'LICENSE'
+PACKAGE_LICENSE = 'MIT'
 PACKAGE_DESCRIPTION = 'Xplenty API Python SDK'
 PACKAGE_INCLUDE_PACKAGE_DATA = True
 PACKAGE_DATA_FILES = [ ]
