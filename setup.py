@@ -5,14 +5,14 @@ except ImportError:
 import os
 
 this_dir = os.path.dirname(__file__)
-readme_filename = ('README.md')
-requirements_filename = ('requirements.txt')
+readme_filename = os.path.join(this_dir, 'README.md')
+requirements_filename = os.path.join(this_dir, 'requirements.txt')
 
 def get_project_path(*args):
     return os.path.abspath(os.path.join(this_dir, *args))
 
 PACKAGE_NAME = 'xplenty'
-PACKAGE_VERSION = '1.0.0'
+PACKAGE_VERSION = '1.0.5'
 PACKAGE_AUTHOR = 'Xplenty'
 PACKAGE_AUTHOR_EMAIL = 'opensource@xplenty.com'
 PACKAGE_URL = 'https://github.com/xplenty/xplenty.py'
