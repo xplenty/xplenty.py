@@ -1,12 +1,14 @@
 ## Xplenty Python Wrapper
 
-The Xplenty PY is a python artifact that provides a simple wrapper for the [Xplenty REST Api Tasks](https://github.com/xplenty/xplenty-api-doc). To use it, create an XplentyClient object and call its methods to access the Xplenty API. This page describes the available XplentyClient methods.
+[ ![Codeship Status for xplenty/xplenty.py](https://codeship.com/projects/0e6524f0-8528-0133-0e8b-123c7a12e678/status?branch=master)](https://codeship.com/projects/122186)
+
+The Xplenty PY is a python artifact that provides a simple wrapper for the [Xplenty REST API](https://github.com/xplenty/xplenty-api-doc). To use it, create an XplentyClient object and call its methods to access the Xplenty API. This page describes the available XplentyClient methods.
 
 ### Installation
 
 Via pip:
 ```bash
-pip install git+git://github.com/xplenty/xplenty.py.git
+pip install xplenty
 ```
 
 ### Create an Xplenty Client Object
