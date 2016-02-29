@@ -189,7 +189,7 @@ class Job(BaseModel):
     _ints = ['id','cluster_id','outputs_count','owner_id','package_id','runtime_in_seconds']
     _floats = ['progress']
     _dates = ['created_at','started_at','updated_at','failed_at','completed_at']
-    _dicts = ['variables']
+    _dicts = ['variables','dynamic_variables']
     _pks = ['id']
 
     def __repr__(self):
@@ -353,14 +353,18 @@ class XplentyClient(object):
 
         return resp
 
-    def add_job(self, cluster_id, package_id, vars={}):
+    def add_job(self, cluster_id, package_id, vars={}, dynamic_vars={}):
         job_info = {}
         job_info["job[cluster_id]"]= cluster_id
-				# We use job_id instead of package_id since that's how it is accepted on Xplenty's side
+        # We use job_id instead of package_id since that's how it is accepted on Xplenty's side
         job_info["job[job_id]"]= package_id
 
         for k, v in vars.iteritems():
             new_key = "job[variables][%s]"%(k)
+            job_info[new_key]= v
+
+        for k, v in dynamic_vars.iteritems():
+            new_key = "job[dynamic_variables][%s]"%(k)
             job_info[new_key]= v
 
         method_path = 'jobs'
@@ -369,6 +373,7 @@ class XplentyClient(object):
         job =  Job.new_from_dict(resp, h=self)
 
         return job
+
 
     def get_account_limits(self):
 
