@@ -219,6 +219,20 @@ class Package(BaseModel):
         return "<Package '{0}'>".format(self.name)
 
 
+class Schedule(BaseModel):
+    """Xplenty Schedule."""
+
+    _strs = ['name','description', 'url', 'interval_unit', 'last_run_status', 'status']
+    _ints = ['id','owner_id', 'interval_amount', 'execution_count']
+    _floats = []
+    _dates = ['created_at','updated_at', 'start_at', 'next_run_at', 'last_run_at']
+    _dicts = ['variables', 'task']
+    _pks = ['id']
+
+    def __repr__(self):
+        return "<Schedule '{0}'>".format(self.name)
+
+
 class RequestWithMethod(urllib2.Request):
     """Workaround for using DELETE with urllib2"""
     def __init__(self, url, method, data=None, headers={},\
@@ -374,7 +388,6 @@ class XplentyClient(object):
 
         return job
 
-
     def get_account_limits(self):
 
         method_path = 'rate_limit_status'
@@ -401,6 +414,18 @@ class XplentyClient(object):
 
         return package
 
+    def get_schedules(self):
+        method_path = 'schedules'
+        url = self._join_url(method_path)
+        resp = self.get(url)
+        return [Schedule.new_from_dict(item, h=self) for item in resp]
+
+    def get_schedule(self, id):
+        method_path = 'schedules/%s' % id
+        url = self._join_url(method_path)
+        resp = self.get(url)
+        return Schedule.new_from_dict(resp, h=self)
+
     @property
     def clusters(self):
         return self.get_clusters()
@@ -416,3 +441,7 @@ class XplentyClient(object):
     @property
     def packages(self):
         return self.get_packages()
+
+    @property
+    def schedules(self):
+        return self.get_schedules()
