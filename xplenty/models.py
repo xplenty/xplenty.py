@@ -181,7 +181,7 @@ class Cluster(BaseModel):
 
 
 class Output(BaseModel):
-    """Xplenty package output."""
+    """Xplenty job output."""
 
     _ints = ['id', 'records_count']
     _strs = ['component_name', 'name', 'preview_url', 'url']
@@ -190,6 +190,17 @@ class Output(BaseModel):
 
     def __repr__(self):
         return "<Output '{0}' for: {1}>".format(self.name, self.component_name)
+
+
+class Creator(BaseModel):
+    """Xplenty job creator."""
+
+    _ints = ['id']
+    _strs = ['type', 'url', 'html_url', 'display_name']
+    _pks = ['id']
+
+    def __repr__(self):
+        return "<Creator '{0}'>".format(self.display_name)
 
 
 class Job(BaseModel):
