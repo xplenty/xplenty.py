@@ -61,7 +61,10 @@ def to_python(obj,
     if object_map:
         for (k, v) in object_map.items():
             if in_dict.get(k):
-                d[k] = v.new_from_dict(in_dict.get(k))
+                if isinstance(v, list):
+                    d[k] = [v.new_from_dict(obj) for obj in in_dict.get(k)]
+                else:
+                    d[k] = v.new_from_dict(in_dict.get(k))
 
     obj.__dict__.update(d)
     obj.__dict__.update(kwargs)
