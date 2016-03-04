@@ -63,7 +63,8 @@ def to_python(obj,
         for (k, v) in object_map.items():
             if in_dict.get(k):
                 if isinstance(v, list):
-                    d[k] = [v.new_from_dict(obj) for obj in in_dict.get(k)]
+                    v = v[0]
+                    d[k] = [v.new_from_dict(o) for o in in_dict.get(k)]
                 else:
                     d[k] = v.new_from_dict(in_dict.get(k))
 
