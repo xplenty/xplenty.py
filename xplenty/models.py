@@ -210,10 +210,11 @@ class Job(BaseModel):
     _ints = ['id','cluster_id','outputs_count','owner_id','package_id','runtime_in_seconds']
     _floats = ['progress']
     _dates = ['created_at','started_at','updated_at','failed_at','completed_at']
-    _dicts = ['variables','dynamic_variables', 'creator']
-    _maps = {
+    _dicts = ['variables','dynamic_variables']
+    _map = {
         'outputs': [Output],
         'cluster': Cluster,
+        'creator': Creator
     }
     _pks = ['id']
 
