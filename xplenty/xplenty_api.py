@@ -14,9 +14,10 @@ logger.addHandler(logging.NullHandler())  # avoid "No handler found" warnings
 
 
 API_URL = "https://api.xplenty.com/%s/api/"   # %s is a placehoher for the account id
+API_VERSION = "2"
 
 HEADERS = {
-	'Accept': 'application/vnd.xplenty+json',
+	'Accept': 'application/vnd.xplenty+json; version=%s' % API_VERSION,
 }
 
 
@@ -37,7 +38,6 @@ class RequestWithMethod(urllib2.Request):
 
 class XplentyClient(object):
 
-    version = "1.0"
     def __init__(self, account_id="", api_key=""):
         self.account_id = account_id
         self.api_key = api_key
