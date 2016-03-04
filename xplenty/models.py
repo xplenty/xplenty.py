@@ -207,10 +207,10 @@ class AccountLimits(BaseModel):
 class Package(BaseModel):
     """Xplenty Package."""
 
-    _strs = ['name','description', 'url']
-    _ints = ['id','owner_id']
+    _strs = ['name', 'description', 'url', 'html_url', 'status']
+    _ints = ['id', 'owner_id']
     _floats = []
-    _dates = ['created_at','updated_at']
+    _dates = ['created_at', 'updated_at']
     _dicts = ['variables']
     _pks = ['id']
 
