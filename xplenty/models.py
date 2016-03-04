@@ -163,10 +163,16 @@ class BaseModel(object):
 class Cluster(BaseModel):
     """Xplenty Cluster."""
 
-    _strs = ['name','description','status','type', 'url']
-    _ints = ['id','owner_id','nodes', 'running_jobs_count', 'time_to_idle']
-    _dates = ['created_at','updated_at', 'available_since', 'terminated_at']
-    _bools = ['terminate_on_idle']
+    _strs = [
+        'name','description','status','type', 'url', 'html_url', 'stack',
+        'region', 'zone', 'master_instance_type', 'slave_instance_type'
+    ]
+    _ints = ['id','owner_id','nodes', 'running_jobs_count', 'time_to_idle', 'plan_id']
+    _floats = ['master_spot_price', 'slave_spot_price', 'master_spot_percentage', 'slave_spot_percentage']
+    _dates = ['created_at','updated_at', 'available_since', 'terminated_at', 'idle_since']
+    _bools = ['terminate_on_idle', 'terminated_on_idle', 'allow_fallback']
+    _lists = ['bootstrap_actions']
+    _dicts = ['creator']
     _pks = ['id']
 
     def __repr__(self):
