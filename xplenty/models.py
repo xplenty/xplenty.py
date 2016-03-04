@@ -173,7 +173,7 @@ class Job(BaseModel):
     _pks = ['id']
 
     def __repr__(self):
-        return "<Job '{0}'>".format(self.name)
+        return "<Job '{0}'>".format(self.id)
 
 
 class AccountLimits(BaseModel):
