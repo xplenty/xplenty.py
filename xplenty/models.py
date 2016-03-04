@@ -180,11 +180,15 @@ class Output(BaseModel):
 class Job(BaseModel):
     """Xplenty Job."""
 
-    _strs = ['errors','status','url']
+    _strs = ['errors','status','url','html_url','log_url']
     _ints = ['id','cluster_id','outputs_count','owner_id','package_id','runtime_in_seconds']
     _floats = ['progress']
     _dates = ['created_at','started_at','updated_at','failed_at','completed_at']
-    _dicts = ['variables','dynamic_variables']
+    _dicts = ['variables','dynamic_variables', 'creator']
+    _maps = {
+        'outputs': [Output],
+        'cluster': Cluster,
+    }
     _pks = ['id']
 
     def __repr__(self):
