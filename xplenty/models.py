@@ -26,15 +26,14 @@ def to_python(obj,
 
     if str_keys:
         for in_key in str_keys:
-            d[in_key] = in_dict.get(in_key)
+            d[in_key] = str(in_dict.get(in_key))
 
     if date_keys:
         for in_key in date_keys:
             in_date = in_dict.get(in_key)
             try:
                 out_date = parse_datetime(in_date)
-            except Exception, e:
-                #raise e
+            except (ValueError, TypeError):
                 out_date = None
 
             d[in_key] = out_date
@@ -42,12 +41,20 @@ def to_python(obj,
     if int_keys:
         for in_key in int_keys:
             if (in_dict is not None) and (in_dict.get(in_key) is not None):
-                d[in_key] = int(in_dict.get(in_key))
+                try:
+                    out_int = int(in_dict.get(in_key))
+                except (ValueError, TypeError):
+                    out_int = None
+                d[in_key] = out_int
 
     if float_keys:
         for in_key in float_keys:
             if (in_dict is not None) and (in_dict.get(in_key) is not None):
-                d[in_key] = float(in_dict.get(in_key))
+                try:
+                    out_float = float(in_dict.get(in_key))
+                except (ValueError, TypeError):
+                    out_float = None
+                d[in_key] = out_float
 
     if bool_keys:
         for in_key in bool_keys:
@@ -75,10 +82,6 @@ def to_python(obj,
 
     obj.__dict__.update(d)
     obj.__dict__.update(kwargs)
-
-    # Save the dictionary, for write comparisons.
-    # obj._cache = d
-    # obj.__cache = in_dict
 
     return obj
 
