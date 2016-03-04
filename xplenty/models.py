@@ -11,6 +11,7 @@ def to_python(obj,
     object_map=None,
     bool_keys=None,
     dict_keys=None,
+    list_keys=None,
     **kwargs):
     """Extends a given object for API Consumption.
 
@@ -66,6 +67,11 @@ def to_python(obj,
                 else:
                     d[k] = v.new_from_dict(in_dict.get(k))
 
+    if list_keys:
+        for in_key in list_keys:
+            if in_dict.get(in_key) is not None:
+                d[in_key] = list(in_dict.get(in_key))
+
     obj.__dict__.update(d)
     obj.__dict__.update(kwargs)
 
@@ -85,6 +91,7 @@ class BaseModel(object):
     _dicts = []
     _floats = []
     _map = {}
+    _lists = []
     _pks = []
 
     def __init__(self):
@@ -144,6 +151,7 @@ class BaseModel(object):
             bool_keys=cls._bools,
             dict_keys=cls._dicts,
             object_map=cls._map,
+            list_keys=cls._lists,
             _h=h
         )
 
