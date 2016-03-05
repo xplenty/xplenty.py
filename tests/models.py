@@ -4,9 +4,20 @@ import unittest
 from xplenty import models
 
 
+class ObjBis(models.BaseModel):
+    _ints = ["i"]
+
+
 class Obj(models.BaseModel):
     _ints = ["i"]
     _strs = ["s"]
+    _dates = ["d"]
+    _bools = ["b"]
+    _dicts = ["dct"]
+    _floats = ["f"]
+    _lists = ["l"]
+    _map = {"o": ObjBis}
+    _pks = ["i"]
 
 
 class ModelsTestCase(unittest.TestCase):
@@ -101,3 +112,70 @@ class ModelsTestCase(unittest.TestCase):
         data = {}
         obj = models.to_python(obj, data, key="value")
         self.assertEqual(obj.key, "value")
+
+
+class BaseModelTestCase(unittest.TestCase):
+
+    def test_init_bootstrap(self):
+        obj = Obj()
+        for key in ["i", "s", "d", "b", "dct", "f", "l", "o"]:
+            self.assertIsNone(getattr(obj, key))
+
+    def test__keys(self):
+        obj = Obj()
+        self.assertItemsEqual(obj._keys(), ["i", "s", "d", "b", "dct", "f", "l", "o"])
+
+    def test_dict(self):
+        obj = Obj()
+        self.assertEqual(obj.dict(), {
+            "i": None,
+            "s": None,
+            "d": None,
+            "b": None,
+            "dct": None,
+            "f": None,
+            "l": None,
+            "o": None
+        })
+
+    def test_dict_with_values(self):
+        obj = Obj.new_from_dict({
+            "i": 12,
+            "s": "eee",
+            "d": "2015-10-10 13:14:25",
+            "b": 1,
+            "dct": {},
+            "f": "79.9",
+            "l": []
+        })
+        self.assertEqual(obj.dict(), {
+            "i": 12,
+            "s": "eee",
+            "d": datetime(2015, 10, 10, 13, 14, 25),
+            "b": True,
+            "dct": {},
+            "f": 79.9,
+            "l": [],
+            "o": None
+        })
+
+    def test_new_from_dict(self):
+        obj = Obj.new_from_dict({
+            "i": 12,
+            "s": "eee",
+            "d": "2015-10-10 13:14:25",
+            "b": 1,
+            "dct": {},
+            "f": "79.9",
+            "l": [],
+            "o": {"i": 12}
+        })
+        self.assertEqual(obj.i, 12)
+        self.assertEqual(obj.s, "eee")
+        self.assertEqual(obj.d, datetime(2015, 10, 10, 13, 14, 25))
+        self.assertTrue(obj.b)
+        self.assertEqual(obj.dct, {})
+        self.assertEqual(obj.f, 79.9)
+        self.assertEqual(obj.l, [])
+        self.assertIsInstance(obj.o, ObjBis)
+        self.assertEqual(obj.o.i, 12)
