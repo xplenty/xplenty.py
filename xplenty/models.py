@@ -22,7 +22,7 @@ def to_python(obj,
     :param object_map: Dict of {key, obj} map, for nested object results.
     """
 
-    d = dict()
+    d = {}
 
     if str_keys:
         for in_key in str_keys:
@@ -113,7 +113,10 @@ class BaseModel(object):
             setattr(self, attr, None)
 
     def _keys(self):
-        return self._strs + self._ints + self._dates + self._bools + self._map.keys()
+        return (
+            self._strs + self._ints + self._dates + self._lists +
+            self._bools + self._map.keys() + self._dicts + self._floats
+        )
 
     @property
     def _id(self):
@@ -136,11 +139,10 @@ class BaseModel(object):
                 pass
 
     def dict(self):
-        d = dict()
-        for k in self.keys():
-            d[k] = self.__dict__.get(k)
-
-        return d
+        return {
+            k: getattr(self, k)
+            for k in self._keys()
+        }
 
     @classmethod
     def new_from_dict(cls, d, h=None, **kwargs):
