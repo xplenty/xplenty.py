@@ -43,5 +43,6 @@ setup(
     install_requires=PACKAGE_INSTALL_REQUIRES,
     include_package_data=PACKAGE_INCLUDE_PACKAGE_DATA,
     data_files=PACKAGE_DATA_FILES,
-    entry_points={}
+    entry_points={},
+    test_suite="tests"
 )
