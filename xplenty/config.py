@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-TEST_SERVER_URL= 'https://app-staging.xplenty.com/{}/api'
-API_URL = TEST_SERVER_URL
+API_URL = 'https://app.xplenty.com/{}/api'
 
-SHORT_URL = 'https://app-staging.xplenty.com'
+SHORT_URL = 'https://app.xplenty.com'
 
 HEADERS = {
 	'Accept': 'application/vnd.xplenty+json; version=2',
