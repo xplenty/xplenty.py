@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-API_URL = 'https://app.xplenty.com/{}/api'
+API_URL = 'https://api.xplenty.com/{}/api'
 
-SHORT_URL = 'https://app.xplenty.com'
+SHORT_URL = 'https://api.xplenty.com'
 
 HEADERS = {
 	'Accept': 'application/vnd.xplenty+json; version=2',
