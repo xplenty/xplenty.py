@@ -199,7 +199,7 @@ class Output(BaseModel):
     """Xplenty job output."""
 
     _ints = ['id', 'records_count', 'bytes_count']
-    _strs = ['component_name', 'name', 'preview_url', 'url', 'preview_type', 'path']
+    _strs = ['name', 'preview_url', 'url', 'preview_type', 'path']
     _dates = ['created_at', 'updated_at']
     _bools = ['can_preview', 'can_download']
     _map = {
