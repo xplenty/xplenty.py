@@ -184,17 +184,31 @@ class Cluster(BaseModel):
     def __repr__(self):
         return "<Cluster '{0}'>".format(self.name)
 
+class Component(BaseModel):
+    """Xplenty output component."""
+
+    _strs = ['name', 'type']
+    _lists = ['fields']
+    _pks = ['name']
+
+    def __repr__(self):
+        return "<Component '{0}'>".format(self.name)
+
 
 class Output(BaseModel):
     """Xplenty job output."""
 
-    _ints = ['id', 'records_count']
-    _strs = ['component_name', 'name', 'preview_url', 'url']
+    _ints = ['id', 'records_count', 'bytes_count']
+    _strs = ['name', 'preview_url', 'url', 'preview_type', 'path']
     _dates = ['created_at', 'updated_at']
+    _bools = ['can_preview', 'can_download']
+    _map = {
+        'component': Component
+    }
     _pks = ['id']
 
     def __repr__(self):
-        return "<Output '{0}' for: {1}>".format(self.name, self.component_name)
+        return "<Output '{0}'>".format(self.name)
 
 
 class Creator(BaseModel):
