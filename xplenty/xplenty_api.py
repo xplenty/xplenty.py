@@ -189,7 +189,7 @@ class Job(BaseModel):
     _ints = ['id','cluster_id','outputs_count','owner_id','package_id','runtime_in_seconds']
     _floats = ['progress']
     _dates = ['created_at','started_at','updated_at','failed_at','completed_at']
-    _dicts = ['variables']
+    _dicts = ['variables','dynamic_variables']
     _pks = ['id']
 
     def __repr__(self):
@@ -217,6 +217,20 @@ class Package(BaseModel):
 
     def __repr__(self):
         return "<Package '{0}'>".format(self.name)
+
+
+class Schedule(BaseModel):
+    """Xplenty Schedule."""
+
+    _strs = ['name','description', 'url', 'interval_unit', 'last_run_status', 'status']
+    _ints = ['id','owner_id', 'interval_amount', 'execution_count']
+    _floats = []
+    _dates = ['created_at','updated_at', 'start_at', 'next_run_at', 'last_run_at']
+    _dicts = ['variables', 'task']
+    _pks = ['id']
+
+    def __repr__(self):
+        return "<Schedule '{0}'>".format(self.name)
 
 
 class RequestWithMethod(urllib2.Request):
@@ -355,14 +369,18 @@ class XplentyClient(object):
 
         return resp
 
-    def add_job(self, cluster_id, package_id, vars={}):
+    def add_job(self, cluster_id, package_id, vars={}, dynamic_vars={}):
         job_info = {}
         job_info["job[cluster_id]"]= cluster_id
-				# We use job_id instead of package_id since that's how it is accepted on Xplenty's side
+        # We use job_id instead of package_id since that's how it is accepted on Xplenty's side
         job_info["job[job_id]"]= package_id
 
         for k, v in vars.iteritems():
             new_key = "job[variables][%s]"%(k)
+            job_info[new_key]= v
+
+        for k, v in dynamic_vars.iteritems():
+            new_key = "job[dynamic_variables][%s]"%(k)
             job_info[new_key]= v
 
         method_path = 'jobs'
@@ -398,6 +416,18 @@ class XplentyClient(object):
 
         return package
 
+    def get_schedules(self):
+        method_path = 'schedules'
+        url = self._join_url(method_path)
+        resp = self.get(url)
+        return [Schedule.new_from_dict(item, h=self) for item in resp]
+
+    def get_schedule(self, id):
+        method_path = 'schedules/%s' % id
+        url = self._join_url(method_path)
+        resp = self.get(url)
+        return Schedule.new_from_dict(resp, h=self)
+
     @property
     def clusters(self):
         return self.get_clusters()
@@ -413,3 +443,7 @@ class XplentyClient(object):
     @property
     def packages(self):
         return self.get_packages()
+
+    @property
+    def schedules(self):
+        return self.get_schedules()
