@@ -314,7 +314,7 @@ class XplentyClient(object):
 
         return cluster
 
-    def create_cluster(self, cluster_type, nodes, cluster_name, cluster_description, terminate_on_idle=False, time_to_idle=3600):
+    def create_cluster(self, cluster_type, nodes, cluster_name, cluster_description, terminate_on_idle=False, time_to_idle=3600, region='amazon-web-services::us-east-1'):
         cluster_info ={}
         cluster_info["cluster[type]"]= cluster_type
         cluster_info["cluster[nodes]"]= nodes
@@ -322,11 +322,13 @@ class XplentyClient(object):
         cluster_info["cluster[description]"]= cluster_description if cluster_description else ""
         cluster_info["cluster[terminate_on_idle]"]= 1 if terminate_on_idle else 0
         cluster_info["cluster[time_to_idle]"]= time_to_idle
+        #New entries available
+        cluster_info["cluster[region]"]=region if region else "amazon-web-services::us-east-1"
         method_path = 'clusters'
         url = self._join_url( method_path )
-        resp = self.post(url,cluster_info)
+        resp =self.post(url,cluster_info)
         cluster =  Cluster.new_from_dict(resp, h=self)
-
+        
         return cluster
 
     def get_jobs(self):
