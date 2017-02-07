@@ -22,7 +22,7 @@ PACKAGE_DESCRIPTION = 'Xplenty API Python SDK'
 PACKAGE_INCLUDE_PACKAGE_DATA = True
 PACKAGE_DATA_FILES = [ ]
 
-print PACKAGES
+print (PACKAGES)
 
 with open(readme_filename) as f:
     PACKAGE_LONG_DESCRIPTION = f.read()
