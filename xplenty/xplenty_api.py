@@ -398,8 +398,8 @@ class XplentyClient(object):
 
         return limit
 
-    def get_packages(self):
-        method_path = 'packages'
+    def get_packages(self, offset=0, limit=20):
+        method_path = 'packages?offset=%d&limit=%d' % (offset, limit)
         url = self._join_url(method_path)
         resp = self.get(url)
         packages = [Package.new_from_dict(item, h=self) for item in resp]
