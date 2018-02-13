@@ -30,6 +30,7 @@ def to_python(obj,
     float_keys=None,
     object_map=None,
     bool_keys=None,
+    list_keys=None,
     dict_keys=None,
     **kwargs):
     """Extends a given object for API Consumption.
@@ -73,6 +74,11 @@ def to_python(obj,
             if in_dict.get(in_key) is not None:
                 d[in_key] = bool(in_dict.get(in_key))
 
+    if list_keys:
+        for in_key in list_keys:
+            if in_dict.get(in_key) is not None:
+                d[in_key] = in_dict.get(in_key)
+
     if dict_keys:
         for in_key in dict_keys:
             if in_dict.get(in_key) is not None:
@@ -101,6 +107,7 @@ class BaseModel(object):
     _bools = []
     _dicts = []
     _floats = []
+    _lists = []
     _map = {}
     _pks = []
 
@@ -119,7 +126,7 @@ class BaseModel(object):
             setattr(self, attr, None)
 
     def _keys(self):
-        return self._strs + self._ints + self._dates + self._bools + self._map.keys()
+        return self._strs + self._ints + self._dates + self._bools + self._lists + self._map.keys()
 
     @property
     def _id(self):
@@ -160,6 +167,7 @@ class BaseModel(object):
             date_keys=cls._dates,
             bool_keys=cls._bools,
             dict_keys=cls._dicts,
+            list_keys=cls._lists,
             object_map=cls._map,
             _h=h
         )
@@ -190,6 +198,7 @@ class Job(BaseModel):
     _floats = ['progress']
     _dates = ['created_at','started_at','updated_at','failed_at','completed_at']
     _dicts = ['variables','dynamic_variables']
+    _lists = ['outputs']
     _pks = ['id']
 
     def __repr__(self):
