@@ -193,7 +193,7 @@ class Job(BaseModel):
     _pks = ['id']
 
     def __repr__(self):
-        return "<Job '{0}'>".format(self.name)
+        return "<Job '{0}'>".format(self.id)
 
 
 class AccountLimits(BaseModel):
@@ -202,7 +202,7 @@ class AccountLimits(BaseModel):
     _ints = ['limit','remaining']
 
     def __repr__(self):
-        return "<AccountLimits '{0}'>".format(self.name)
+        return "<AccountLimits '{0}'>".format(self.remaining)
 
 
 class Package(BaseModel):
