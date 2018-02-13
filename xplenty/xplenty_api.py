@@ -304,8 +304,8 @@ class XplentyClient(object):
         url = urljoin(_url , method )
         return url
 
-    def get_clusters(self):
-        method_path = 'clusters'
+    def get_clusters(self, offset=0, limit=20):
+        method_path = 'clusters?offset=%d&limit=%d' % (offset, limit)
         url = self._join_url( method_path )
         resp = self.get(url)
         clusters =  [Cluster.new_from_dict(item, h=self) for item in resp]
