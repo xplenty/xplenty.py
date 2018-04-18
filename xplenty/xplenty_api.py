@@ -2,10 +2,14 @@
 import base64
 import json
 import logging
-import urllib
-import urllib2
-from urlparse import urljoin
-
+try:
+    from urllib.parse import urlencode, urljoin
+    from urllib.request import urlopen, Request
+    from urllib.error import HTTPError
+except ImportError:
+    from urllib import urlencode
+    from urllib2 import urlopen, Request, HTTPError
+    from urlparse import urljoin
 from dateutil.parser import parse as parse_datetime
 
 from .exceptions import XplentyAPIException
@@ -233,19 +237,19 @@ class Schedule(BaseModel):
         return "<Schedule '{0}'>".format(self.name)
 
 
-class RequestWithMethod(urllib2.Request):
+class RequestWithMethod(Request):
     """Workaround for using DELETE with urllib2"""
     def __init__(self, url, method, data=None, headers={},\
         origin_req_host=None, unverifiable=False):
         self._method = method
-        urllib2.Request.__init__(self, url, data, headers,\
+        Request.__init__(self, url, data, headers,\
                  origin_req_host, unverifiable)
 
     def get_method(self):
         if self._method:
             return self._method
         else:
-            return urllib2.Request.get_method(self)
+            return Request.get_method(self)
 
 
 class XplentyClient(object):
@@ -260,28 +264,28 @@ class XplentyClient(object):
 
     def get(self,url):
         logger.debug("GET %s", url)
-        request = urllib2.Request(url,headers=HEADERS)
+        request = Request(url,headers=HEADERS)
         base64string = base64.encodestring('%s' % (self.api_key)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
 
         try:
-            resp = urllib2.urlopen(request)
-        except urllib2.HTTPError as error:
+            resp = urlopen(request)
+        except HTTPError as error:
             raise XplentyAPIException(error)
 
         return json.loads(resp.read())
 
     def post(self, url, data_dict={}):
-        encoded_data = urllib.urlencode(data_dict)
+        encoded_data = urlencode(data_dict)
         logger.debug("POST %s, data %s", url, encoded_data)
 
-        request = urllib2.Request(url, data=encoded_data, headers=HEADERS)
+        request = Request(url, data=encoded_data, headers=HEADERS)
         base64string = base64.encodestring('%s' % (self.api_key)).replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
 
         try:
-            resp = urllib2.urlopen(request)
-        except urllib2.HTTPError as error:
+            resp = urlopen(request)
+        except HTTPError as error:
             raise XplentyAPIException(error)
 
         return json.loads(resp.read())
@@ -293,8 +297,8 @@ class XplentyClient(object):
         request.add_header("Authorization", "Basic %s" % base64string)
 
         try:
-            resp = urllib2.urlopen(request)
-        except urllib2.HTTPError as error:
+            resp = urlopen(request)
+        except HTTPError as error:
             raise XplentyAPIException(error)
 
         return json.loads(resp.read())
