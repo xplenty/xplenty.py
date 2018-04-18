@@ -119,7 +119,7 @@ class BaseModel(object):
             setattr(self, attr, None)
 
     def _keys(self):
-        return self._strs + self._ints + self._dates + self._bools + self._map.keys()
+        return self._strs + self._ints + self._dates + self._bools + list(self._map.keys())
 
     @property
     def _id(self):
