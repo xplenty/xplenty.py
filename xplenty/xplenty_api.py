@@ -52,7 +52,7 @@ def to_python(obj,
             in_date = in_dict.get(in_key)
             try:
                 out_date = parse_datetime(in_date)
-            except Exception, e:
+            except Exception as e:
                 #raise e
                 out_date = None
 
@@ -266,7 +266,7 @@ class XplentyClient(object):
 
         try:
             resp = urllib2.urlopen(request)
-        except urllib2.HTTPError, error:
+        except urllib2.HTTPError as error:
             raise XplentyAPIException(error)
 
         return json.loads(resp.read())
@@ -281,7 +281,7 @@ class XplentyClient(object):
 
         try:
             resp = urllib2.urlopen(request)
-        except urllib2.HTTPError, error:
+        except urllib2.HTTPError as error:
             raise XplentyAPIException(error)
 
         return json.loads(resp.read())
@@ -294,7 +294,7 @@ class XplentyClient(object):
 
         try:
             resp = urllib2.urlopen(request)
-        except urllib2.HTTPError, error:
+        except urllib2.HTTPError as error:
             raise XplentyAPIException(error)
 
         return json.loads(resp.read())
