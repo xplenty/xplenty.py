@@ -373,11 +373,11 @@ class XplentyClient(object):
         # We use job_id instead of package_id since that's how it is accepted on Xplenty's side
         job_info["job[job_id]"]= package_id
 
-        for k, v in vars.iteritems():
+        for k, v in vars.items():
             new_key = "job[variables][%s]"%(k)
             job_info[new_key]= v
 
-        for k, v in dynamic_vars.iteritems():
+        for k, v in dynamic_vars.items():
             new_key = "job[dynamic_variables][%s]"%(k)
             job_info[new_key]= v
 
