@@ -21,6 +21,8 @@ PACKAGE_LICENSE = 'MIT'
 PACKAGE_DESCRIPTION = 'Xplenty API Python SDK'
 PACKAGE_INCLUDE_PACKAGE_DATA = True
 PACKAGE_DATA_FILES = [ ]
+PACKAGE_CLASSIFIERS = ['Programming Language :: Python :: 2.7',
+                       'Programming Language :: Python :: 3']
 
 with open(readme_filename) as f:
     PACKAGE_LONG_DESCRIPTION = f.read()
@@ -41,5 +43,6 @@ setup(
     install_requires=PACKAGE_INSTALL_REQUIRES,
     include_package_data=PACKAGE_INCLUDE_PACKAGE_DATA,
     data_files=PACKAGE_DATA_FILES,
-    entry_points={}
+    entry_points={},
+    classifiers=PACKAGE_CLASSIFIERS
 )
