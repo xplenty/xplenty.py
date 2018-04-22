@@ -12,7 +12,7 @@ def get_project_path(*args):
     return os.path.abspath(os.path.join(this_dir, *args))
 
 PACKAGE_NAME = 'xplenty'
-PACKAGE_VERSION = '1.1.2'
+PACKAGE_VERSION = '1.2.0'
 PACKAGE_AUTHOR = 'Xplenty'
 PACKAGE_AUTHOR_EMAIL = 'opensource@xplenty.com'
 PACKAGE_URL = 'https://github.com/xplenty/xplenty.py'
@@ -21,6 +21,8 @@ PACKAGE_LICENSE = 'MIT'
 PACKAGE_DESCRIPTION = 'Xplenty API Python SDK'
 PACKAGE_INCLUDE_PACKAGE_DATA = True
 PACKAGE_DATA_FILES = [ ]
+PACKAGE_CLASSIFIERS = ['Programming Language :: Python :: 2.7',
+                       'Programming Language :: Python :: 3']
 
 with open(readme_filename) as f:
     PACKAGE_LONG_DESCRIPTION = f.read()
@@ -41,5 +43,6 @@ setup(
     install_requires=PACKAGE_INSTALL_REQUIRES,
     include_package_data=PACKAGE_INCLUDE_PACKAGE_DATA,
     data_files=PACKAGE_DATA_FILES,
-    entry_points={}
+    entry_points={},
+    classifiers=PACKAGE_CLASSIFIERS
 )
