@@ -265,7 +265,8 @@ class XplentyClient(object):
     def get(self,url):
         logger.debug("GET %s", url)
         request = Request(url,headers=HEADERS)
-        base64string = base64.encodestring('%s' % (self.api_key)).replace('\n', '')
+        bytestring = self.api_key.encode()
+        base64string = base64.encodestring(bytestring).decode().replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
 
         try:
@@ -276,11 +277,12 @@ class XplentyClient(object):
         return json.loads(resp.read())
 
     def post(self, url, data_dict={}):
-        encoded_data = urlencode(data_dict)
+        encoded_data = urlencode(data_dict).encode()
         logger.debug("POST %s, data %s", url, encoded_data)
 
         request = Request(url, data=encoded_data, headers=HEADERS)
-        base64string = base64.encodestring('%s' % (self.api_key)).replace('\n', '')
+        bytestring = self.api_key.encode()
+        base64string = base64.encodestring(bytestring).decode().replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
 
         try:
@@ -293,7 +295,8 @@ class XplentyClient(object):
     def delete(self, url):
         logger.debug("DELETE %s", url)
         request = RequestWithMethod(url, 'DELETE', headers=HEADERS)
-        base64string = base64.encodestring('%s' % (self.api_key)).replace('\n', '')
+        bytestring = self.api_key.encode()
+        base64string = base64.encodestring(bytestring).decode().replace('\n', '')
         request.add_header("Authorization", "Basic %s" % base64string)
 
         try:
