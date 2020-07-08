@@ -1,8 +1,17 @@
 import xplenty
+import os
 import sys
 import time
-    
-# TODO: read account_id and api_key from env (Codeship)
+
+# Test suite for the Xplenty Python SDK.
+
+# A cluster will be created during testing. 
+# Make sure that the account used for testing 
+#   - has 0 clusters OR the capacity to accommodate an extra Sandbox cluster
+#   - has at least one package
+#   - has at least one schedule
+# ... otherwise the tests will fail.
+# Also note, a cluster in pending or creating state cannot be terminated and will throw validation error.
     
 max_response = 20
 new_job = {
@@ -17,10 +26,6 @@ new_cluster = {
     "terminate_on_idle": False, 
     "time_to_idle": 3600
 }
-account_id =""
-api_key = ""
-
-api = xplenty.XplentyClient(account_id,api_key)
 
 
 def wait_for_cluster_creation(cluster):
@@ -369,13 +374,21 @@ class TestSuite:
             self.print_fail(name, e)
 
 
-# A cluster will be created during testing. 
-# Make sure that the account used for testing 
-#   - has 0 clusters OR the capacity to accommodate an extra Sandbox cluster
-#   - has at least one package
-#   - has at least one schedule
-# ... otherwise the tests will fail.
-# Also note, a cluster in pending or creating state cannot be terminated and will throw validation error.
 if __name__ == "__main__":
     suite = TestSuite()
+    
+    id_env_key = "XPLENTY_ACCOUNT_ID"
+    api_env_key = "XPLENTY_API_KEY"
+    # You may replace the Nones with your API credentials if you don't want to put them in the env.
+    account_id = str(os.environ.get(id_env_key, None))
+    api_key = str(os.environ.get(api_env_key, None))
+    api = None
+    if account_id and api_key:
+        api = xplenty.XplentyClient(account_id,api_key)
+    else:
+        msg = "API credentials must be in this file or in the env under " + id_env_key + " and " + api_env_key
+        suite.prints(msg, [suite.STYLES["BOLD"], suite.STYLES["FAIL"]])
+        suite.prints("Halting tests.", [suite.STYLES["BOLD"], suite.STYLES["FAIL"]])
+        sys.exit(-1)
+        
     suite.run()
