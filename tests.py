@@ -129,11 +129,14 @@ class TestSuite:
             self.SKIPPED += 1
             self.print_warn("Skipping test 'terminate_cluster' because create_cluster failed.")
 
+        if self.SKIPPED > 0:
+            self.prints("==== {skipped} TESTS SKIPPED ====".format(skipped=self.SKIPPED), [self.STYLES["WARN"]])
+            
         if self.ERRORS == 0:
-            self.prints("==== ALL " + str(self.SIZE) + " TESTS PASSED ====", [self.STYLES["BOLD"], self.STYLES["PASS"]])
+            self.prints("==== {passed}/{total} TESTS PASSED ====".format(passed=str(self.SIZE - self.SKIPPED), total=str(self.SIZE)), 
+                        [self.STYLES["BOLD"], self.STYLES["PASS"]])
             # no need to exit() here
         else:
-            self.prints("==== {skipped} TESTS SKIPPED ====".format(skipped=self.SKIPPED), [self.STYLES["WARN"]])
             self.prints("==== {passed}/{total} TESTS FAILED ====".format(passed=str(self.ERRORS), total=str(self.SIZE)), 
                         [self.STYLES["BOLD"], self.STYLES["FAIL"]])
             # exit(-1) signals failure
