@@ -12,7 +12,7 @@ def get_project_path(*args):
     return os.path.abspath(os.path.join(this_dir, *args))
 
 PACKAGE_NAME = 'xplenty'
-PACKAGE_VERSION = '1.2.0'
+PACKAGE_VERSION = '2.0.0'
 PACKAGE_AUTHOR = 'Xplenty'
 PACKAGE_AUTHOR_EMAIL = 'opensource@xplenty.com'
 PACKAGE_URL = 'https://github.com/xplenty/xplenty.py'
