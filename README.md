@@ -1,6 +1,6 @@
 ## Xplenty Python Wrapper
 
-[ ![Codeship Status for xplenty/xplenty.py](https://codeship.com/projects/0e6524f0-8528-0133-0e8b-123c7a12e678/status?branch=master)](https://codeship.com/projects/122186)
+[ ![Codeship Status for xplenty/xplenty.py](https://codeship.com/projects/0e6524f0-8528-0133-0e8b-123c7a12e678/status?branch=main)](https://codeship.com/projects/122186)
 
 The Xplenty PY is a python artifact that provides a simple wrapper for the [Xplenty REST API](https://github.com/xplenty/xplenty-api-doc). To use it, create an XplentyClient object and call its methods to access the Xplenty API. This page describes the available XplentyClient methods.
 
@@ -21,7 +21,7 @@ client = XplentyClient(account_id,api_key)
 ```
 ### Create a Cluster
 
-This method creates a new cluster. A cluster is a group of machines ("nodes") allocated to your account. The number of nodes in the cluster is determined by the "nodes" value that you supply to the call. While the cluster is active, only your account's users can run jobs on the cluster. 
+This method creates a new cluster. A cluster is a group of machines ("nodes") allocated to your account. The number of nodes in the cluster is determined by the "nodes" value that you supply to the call. While the cluster is active, only your account's users can run jobs on the cluster.
 You will need to provide an active cluster when starting a new job. Save the cluster ID value returned in the response "id" field. You will use the value to refer to this cluster in subsequent API calls.
 ```python
 cluster_type = "production"
@@ -68,10 +68,10 @@ package_id = 782
 variables = {}
 variables['OUTPUTPATH']="test/job_vars.csv"
 variables['Date']="09-10-2012"
-    
+
 job = client.add_job(cluster_id, package_id, variables)
-    
-print job.id 
+
+print job.id
 ```
 ### List All Jobs
 
