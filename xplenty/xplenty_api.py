@@ -7,9 +7,10 @@ try:
     from urllib.request import urlopen, Request
     from urllib.error import HTTPError
 except ImportError:
-    from urllib import urlencode
-    from urllib2 import urlopen, Request, HTTPError
-    from urlparse import urljoin
+    from urllib.parse import urlencode
+    from urllib.request import urlopen, Request
+    from urllib.error import HTTPError
+    from urllib.parse import urljoin
 from dateutil.parser import parse as parse_datetime
 
 from .exceptions import XplentyAPIException
@@ -24,6 +25,10 @@ HEADERS = {
     'Accept': 'application/vnd.xplenty+json version=2'
 }
 
+def to_base64(message):
+    message_bytes = message.encode('utf-8')
+    base64_bytes = base64.b64encode(message_bytes)
+    return base64_bytes.decode('utf-8')
 
 # from kennethreitz/python-github3
 def to_python(obj,
@@ -83,7 +88,7 @@ def to_python(obj,
                 d[in_key] = dict(in_dict.get(in_key))
 
     if object_map:
-        for (k, v) in object_map.items():
+        for (k, v) in list(object_map.items()):
             if in_dict.get(k):
                 d[k] = v.new_from_dict(in_dict.get(k))
 
@@ -147,7 +152,7 @@ class BaseModel(object):
 
     def dict(self):
         d = dict()
-        for k in self.keys():
+        for k in list(self.keys()):
             d[k] = self.__dict__.get(k)
 
         return d
@@ -265,8 +270,8 @@ class XplentyClient(object):
     def get(self,url):
         logger.debug("GET %s", url)
         request = Request(url,headers=HEADERS)
-        base64string = base64.encodestring('%s' % (self.api_key)).replace('\n', '')
-        request.add_header("Authorization", "Basic %s" % base64string)
+        base64string = to_base64(self.api_key).replace('\n', '')
+        request.add_header("Authorization", f"Basic {base64string}")
 
         try:
             resp = urlopen(request)
@@ -276,12 +281,12 @@ class XplentyClient(object):
         return json.loads(resp.read())
 
     def post(self, url, data_dict={}):
-        json_data = json.dumps(data_dict)
+        json_data = json.dumps(data_dict).encode('utf-8')
         logger.debug("POST %s, data %s", url, json_data)
 
         request = Request(url, data=json_data, headers=HEADERS)
-        base64string = base64.encodestring('%s' % (self.api_key)).replace('\n', '')
-        request.add_header("Authorization", "Basic %s" % base64string)
+        base64string = to_base64(self.api_key).replace('\n', '')
+        request.add_header("Authorization", f"Basic {base64string}")
         request.add_header("Content-Type", "application/json")
 
         try:
@@ -294,8 +299,8 @@ class XplentyClient(object):
     def delete(self, url):
         logger.debug("DELETE %s", url)
         request = RequestWithMethod(url, 'DELETE', headers=HEADERS)
-        base64string = base64.encodestring('%s' % (self.api_key)).replace('\n', '')
-        request.add_header("Authorization", "Basic %s" % base64string)
+        base64string = to_base64(self.api_key).replace('\n', '')
+        request.add_header("Authorization", f"Basic {base64string}")
 
         try:
             resp = urlopen(request)
