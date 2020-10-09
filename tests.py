@@ -15,7 +15,7 @@ import time
 
 max_response = 20
 new_job = {
-    "variables" : {"vegetable": "'tomato'", "pizza":"ClockTime()"},
+    "variables": {"vegetable": "'tomato'", "pizza": "ClockTime()"},
     "dynamic_variables": {"dynamic": "ClockTime()"}
 }
 new_cluster = {
@@ -58,16 +58,17 @@ class TestSuite:
     }
 
     def __init__(self):
-        self.SIZE = len([function for function in dir(self) if function.startswith("test_")])
+        self.SIZE = len([function for function in dir(self)
+                         if function.startswith("test_")])
 
     def run(self):
-        self.prints("==== STARTING TESTS ====", [self.STYLES["BOLD"], self.STYLES["INFO"]])
+        self.prints("==== STARTING TESTS ====", [
+                    self.STYLES["BOLD"], self.STYLES["INFO"]])
 
         # Clusters
         cluster = self.test_create_cluster(new_cluster["cluster_type"], new_cluster["nodes"],
-                                            new_cluster["cluster_name"], new_cluster["cluster_description"],
-                                            new_cluster["terminate_on_idle"], new_cluster["time_to_idle"])
-
+                                           new_cluster["cluster_name"], new_cluster["cluster_description"],
+                                           new_cluster["terminate_on_idle"], new_cluster["time_to_idle"])
 
         self.test_get_clusters()
 
@@ -75,7 +76,8 @@ class TestSuite:
             self.test_get_cluster(cluster.id)
         else:
             self.SKIPPED += 1
-            self.print_warn("Skipping test: 'get_cluster' because create_cluster failed.")
+            self.print_warn(
+                "Skipping test: 'get_cluster' because create_cluster failed.")
 
         # Packages
         packages = self.test_get_packages()
@@ -84,7 +86,8 @@ class TestSuite:
             self.test_get_package(packages[0].id)
         else:
             self.SKIPPED += 1
-            self.print_warn("Skipping test: 'get_package' because get_packages failed.")
+            self.print_warn(
+                "Skipping test: 'get_package' because get_packages failed.")
 
         # Schedules
         schedules = suite.test_get_schedules()
@@ -93,7 +96,8 @@ class TestSuite:
             self.test_get_schedule(schedules[0].id)
         else:
             self.SKIPPED += 1
-            self.print_warn("Skipping test: 'get_schedule' because get_schedules failed.")
+            self.print_warn(
+                "Skipping test: 'get_schedule' because get_schedules failed.")
 
         # Account limits
         self.test_get_account_limits()
@@ -102,10 +106,12 @@ class TestSuite:
         # add_job requires an Available cluster and a package
         job = None
         if cluster and packages:
-            job = self.test_add_job(cluster.id, packages[0].id, new_job["variables"], new_job["dynamic_variables"])
+            job = self.test_add_job(
+                cluster.id, packages[0].id, new_job["variables"], new_job["dynamic_variables"])
         else:
             self.SKIPPED += 1
-            self.print_warn("Skipping test: 'add_job' because create_cluster or get_packages failed.")
+            self.print_warn(
+                "Skipping test: 'add_job' because create_cluster or get_packages failed.")
 
         self.test_get_jobs()
 
@@ -120,7 +126,8 @@ class TestSuite:
             self.test_stop_job(cluster.id, packages[0].id)
         else:
             self.SKIPPED += 1
-            self.print_warn("Skipping test 'stop_job' because create_cluster failed.")
+            self.print_warn(
+                "Skipping test 'stop_job' because create_cluster failed.")
 
         # Cluster termination
         if cluster:
@@ -128,10 +135,12 @@ class TestSuite:
             self.test_terminate_cluster(cluster.id)
         else:
             self.SKIPPED += 1
-            self.print_warn("Skipping test 'terminate_cluster' because create_cluster failed.")
+            self.print_warn(
+                "Skipping test 'terminate_cluster' because create_cluster failed.")
 
         if self.SKIPPED > 0:
-            self.prints("==== {skipped} TESTS SKIPPED ====".format(skipped=self.SKIPPED), [self.STYLES["WARN"]])
+            self.prints("==== {skipped} TESTS SKIPPED ====".format(
+                skipped=self.SKIPPED), [self.STYLES["WARN"]])
 
         if self.ERRORS == 0:
             self.prints("==== {passed}/{total} TESTS PASSED ====".format(passed=str(self.SIZE - self.SKIPPED), total=str(self.SIZE)),
@@ -218,7 +227,7 @@ class TestSuite:
             self.print_pass(name)
         except Exception as e:
             self.ERRORS += 1
-            self.print_fail(name,e)
+            self.print_fail(name, e)
 
         return cluster
 
@@ -274,7 +283,8 @@ class TestSuite:
         started_job = None
         try:
             # a job needs to be started first, cluster and package must exist
-            started_job = api.add_job(cluster_id, package_id, new_job["variables"], new_job["dynamic_variables"])
+            started_job = api.add_job(
+                cluster_id, package_id, new_job["variables"], new_job["dynamic_variables"])
             assert started_job is not None
             res = api.stop_job(started_job.id)
             assert res is not None
@@ -388,11 +398,13 @@ if __name__ == "__main__":
     api_key = str(os.environ.get(api_env_key, None))
     api = None
     if account_id and api_key:
-        api = xplenty.XplentyClient(account_id,api_key)
+        api = xplenty.XplentyClient(account_id, api_key)
     else:
-        msg = "API credentials must be in this file or in the env under " + id_env_key + " and " + api_env_key
+        msg = "API credentials must be in this file or in the env under " + \
+            id_env_key + " and " + api_env_key
         suite.prints(msg, [suite.STYLES["BOLD"], suite.STYLES["FAIL"]])
-        suite.prints("Halting tests.", [suite.STYLES["BOLD"], suite.STYLES["FAIL"]])
+        suite.prints("Halting tests.", [
+                     suite.STYLES["BOLD"], suite.STYLES["FAIL"]])
         sys.exit(-1)
 
     suite.run()

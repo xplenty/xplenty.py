@@ -5,6 +5,7 @@ class XplentyAPIException(Exception):
     """
     An exception that is raised whenever an error occurred.
     """
+
     def __init__(self, http_error):
         self.http_error = http_error
         try:
