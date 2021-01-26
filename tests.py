@@ -251,7 +251,7 @@ class TestSuite:
             jobs = api.jobs
             assert jobs is not None
             assert type(jobs) is list
-            assert len(jobs) == max_response
+            assert len(jobs) <= max_response
             for job in jobs:
                 assert type(job) is xplenty.Job
             self.print_pass(name)
