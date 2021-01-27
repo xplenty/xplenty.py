@@ -267,8 +267,7 @@ class RequestWithMethod(Request):
 
 
 class XplentyClient(object):
-
-    version = "1.0"
+    version = "3.0.0"
 
     def __init__(self, account_id="", api_key=""):
         self.account_id = account_id
