@@ -7,9 +7,10 @@ try:
     from urllib.request import urlopen, Request
     from urllib.error import HTTPError
 except ImportError:
-    from urllib import urlencode
-    from urllib2 import urlopen, Request, HTTPError
-    from urlparse import urljoin
+    from urllib.parse import urlencode
+    from urllib.request import urlopen, Request
+    from urllib.error import HTTPError
+    from urllib.parse import urljoin
 from dateutil.parser import parse as parse_datetime
 
 from .exceptions import XplentyAPIException
@@ -18,24 +19,32 @@ logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())  # avoid "No handler found" warnings
 
 
-API_URL = "https://api.xplenty.com/%s/api/"   # %s is a placehoher for the account id
+# %s is a placehoher for the account id
+API_URL = "https://api.xplenty.com/%s/api/"
 
 HEADERS = {
     'Accept': 'application/vnd.xplenty+json version=2'
 }
 
 
+def to_base64(message):
+    message_bytes = message.encode('utf-8')
+    base64_bytes = base64.b64encode(message_bytes)
+    return base64_bytes.decode('utf-8')
+
 # from kennethreitz/python-github3
+
+
 def to_python(obj,
-    in_dict,
-    str_keys=None,
-    date_keys=None,
-    int_keys=None,
-    float_keys=None,
-    object_map=None,
-    bool_keys=None,
-    dict_keys=None,
-    **kwargs):
+              in_dict,
+              str_keys=None,
+              date_keys=None,
+              int_keys=None,
+              float_keys=None,
+              object_map=None,
+              bool_keys=None,
+              dict_keys=None,
+              **kwargs):
     """Extends a given object for API Consumption.
 
     :param obj: Object to extend.
@@ -56,7 +65,7 @@ def to_python(obj,
             in_date = in_dict.get(in_key)
             try:
                 out_date = parse_datetime(in_date)
-            except Exception as e:
+            except Exception:
                 #raise e
                 out_date = None
 
@@ -83,7 +92,7 @@ def to_python(obj,
                 d[in_key] = dict(in_dict.get(in_key))
 
     if object_map:
-        for (k, v) in object_map.items():
+        for (k, v) in list(object_map.items()):
             if in_dict.get(k):
                 d[k] = v.new_from_dict(in_dict.get(k))
 
@@ -147,7 +156,7 @@ class BaseModel(object):
 
     def dict(self):
         d = dict()
-        for k in self.keys():
+        for k in list(self.keys()):
             d[k] = self.__dict__.get(k)
 
         return d
@@ -176,9 +185,9 @@ class BaseModel(object):
 class Cluster(BaseModel):
     """Xplenty Cluster."""
 
-    _strs = ['name','description','status','type', 'url']
-    _ints = ['id','owner_id','nodes', 'running_jobs_count', 'time_to_idle']
-    _dates = ['created_at','updated_at', 'available_since', 'terminated_at']
+    _strs = ['name', 'description', 'status', 'type', 'url']
+    _ints = ['id', 'owner_id', 'nodes', 'running_jobs_count', 'time_to_idle']
+    _dates = ['created_at', 'updated_at', 'available_since', 'terminated_at']
     _bools = ['terminate_on_idle']
     _pks = ['id']
 
@@ -189,11 +198,13 @@ class Cluster(BaseModel):
 class Job(BaseModel):
     """Xplenty Job."""
 
-    _strs = ['errors','status','url']
-    _ints = ['id','cluster_id','outputs_count','owner_id','package_id','runtime_in_seconds']
+    _strs = ['errors', 'status', 'url']
+    _ints = ['id', 'cluster_id', 'outputs_count',
+             'owner_id', 'package_id', 'runtime_in_seconds']
     _floats = ['progress']
-    _dates = ['created_at','started_at','updated_at','failed_at','completed_at']
-    _dicts = ['variables','dynamic_variables']
+    _dates = ['created_at', 'started_at',
+              'updated_at', 'failed_at', 'completed_at']
+    _dicts = ['variables', 'dynamic_variables']
     _pks = ['id']
 
     def __repr__(self):
@@ -203,7 +214,7 @@ class Job(BaseModel):
 class AccountLimits(BaseModel):
     """Xplenty Account limits."""
 
-    _ints = ['limit','remaining']
+    _ints = ['limit', 'remaining']
 
     def __repr__(self):
         return "<AccountLimits '{0}'>".format(self.remaining)
@@ -212,10 +223,10 @@ class AccountLimits(BaseModel):
 class Package(BaseModel):
     """Xplenty Package."""
 
-    _strs = ['name','description', 'url']
-    _ints = ['id','owner_id']
+    _strs = ['name', 'description', 'url']
+    _ints = ['id', 'owner_id']
     _floats = []
-    _dates = ['created_at','updated_at']
+    _dates = ['created_at', 'updated_at']
     _dicts = ['variables']
     _pks = ['id']
 
@@ -226,10 +237,12 @@ class Package(BaseModel):
 class Schedule(BaseModel):
     """Xplenty Schedule."""
 
-    _strs = ['name','description', 'url', 'interval_unit', 'last_run_status', 'status']
-    _ints = ['id','owner_id', 'interval_amount', 'execution_count']
+    _strs = ['name', 'description', 'url',
+             'interval_unit', 'last_run_status', 'status']
+    _ints = ['id', 'owner_id', 'interval_amount', 'execution_count']
     _floats = []
-    _dates = ['created_at','updated_at', 'start_at', 'next_run_at', 'last_run_at']
+    _dates = ['created_at', 'updated_at',
+              'start_at', 'next_run_at', 'last_run_at']
     _dicts = ['variables', 'task']
     _pks = ['id']
 
@@ -239,11 +252,12 @@ class Schedule(BaseModel):
 
 class RequestWithMethod(Request):
     """Workaround for using DELETE with urllib2"""
-    def __init__(self, url, method, data=None, headers={},\
-        origin_req_host=None, unverifiable=False):
+
+    def __init__(self, url, method, data=None, headers={},
+                 origin_req_host=None, unverifiable=False):
         self._method = method
-        Request.__init__(self, url, data, headers,\
-                 origin_req_host, unverifiable)
+        Request.__init__(self, url, data, headers,
+                         origin_req_host, unverifiable)
 
     def get_method(self):
         if self._method:
@@ -253,8 +267,8 @@ class RequestWithMethod(Request):
 
 
 class XplentyClient(object):
+    version = "3.0.0"
 
-    version = "1.0"
     def __init__(self, account_id="", api_key=""):
         self.account_id = account_id
         self.api_key = api_key
@@ -262,11 +276,11 @@ class XplentyClient(object):
     def __repr__(self):
         return '<Xplenty client at 0x%x>' % (id(self))
 
-    def get(self,url):
+    def get(self, url):
         logger.debug("GET %s", url)
-        request = Request(url,headers=HEADERS)
-        base64string = base64.encodestring('%s' % (self.api_key)).replace('\n', '')
-        request.add_header("Authorization", "Basic %s" % base64string)
+        request = Request(url, headers=HEADERS)
+        base64string = to_base64(self.api_key).replace('\n', '')
+        request.add_header("Authorization", f"Basic {base64string}")
 
         try:
             resp = urlopen(request)
@@ -276,12 +290,12 @@ class XplentyClient(object):
         return json.loads(resp.read())
 
     def post(self, url, data_dict={}):
-        json_data = json.dumps(data_dict)
+        json_data = json.dumps(data_dict).encode('utf-8')
         logger.debug("POST %s, data %s", url, json_data)
 
         request = Request(url, data=json_data, headers=HEADERS)
-        base64string = base64.encodestring('%s' % (self.api_key)).replace('\n', '')
-        request.add_header("Authorization", "Basic %s" % base64string)
+        base64string = to_base64(self.api_key).replace('\n', '')
+        request.add_header("Authorization", f"Basic {base64string}")
         request.add_header("Content-Type", "application/json")
 
         try:
@@ -294,8 +308,8 @@ class XplentyClient(object):
     def delete(self, url):
         logger.debug("DELETE %s", url)
         request = RequestWithMethod(url, 'DELETE', headers=HEADERS)
-        base64string = base64.encodestring('%s' % (self.api_key)).replace('\n', '')
-        request.add_header("Authorization", "Basic %s" % base64string)
+        base64string = to_base64(self.api_key).replace('\n', '')
+        request.add_header("Authorization", f"Basic {base64string}")
 
         try:
             resp = urlopen(request)
@@ -305,94 +319,94 @@ class XplentyClient(object):
         return json.loads(resp.read())
 
     def _join_url(self, method):
-        _url = API_URL % ( self.account_id )
-        url = urljoin(_url , method )
+        _url = API_URL % (self.account_id)
+        url = urljoin(_url, method)
         return url
 
     def get_clusters(self, offset=0, limit=20):
         method_path = 'clusters?offset=%d&limit=%d' % (offset, limit)
-        url = self._join_url( method_path )
+        url = self._join_url(method_path)
         resp = self.get(url)
-        clusters =  [Cluster.new_from_dict(item, h=self) for item in resp]
+        clusters = [Cluster.new_from_dict(item, h=self) for item in resp]
 
         return clusters
 
-    def get_cluster(self,id):
-        method_path = 'clusters/%s'%(str(id))
-        url = self._join_url( method_path )
+    def get_cluster(self, id):
+        method_path = 'clusters/%s' % (str(id))
+        url = self._join_url(method_path)
         resp = self.get(url)
-        cluster =  Cluster.new_from_dict(resp, h=self)
+        cluster = Cluster.new_from_dict(resp, h=self)
 
         return cluster
 
-    def terminate_cluster(self,id):
-        method_path = 'clusters/%s'%(str(id))
-        url = self._join_url( method_path )
+    def terminate_cluster(self, id):
+        method_path = 'clusters/%s' % (str(id))
+        url = self._join_url(method_path)
         resp = self.delete(url)
-        cluster =  Cluster.new_from_dict(resp, h=self)
+        cluster = Cluster.new_from_dict(resp, h=self)
 
         return cluster
 
     def create_cluster(self, cluster_type, nodes, cluster_name, cluster_description, terminate_on_idle=False, time_to_idle=3600):
-        cluster_info ={}
-        cluster_info["type"]= cluster_type
-        cluster_info["nodes"]= nodes
-        cluster_info["name"]= cluster_name if cluster_name else ""
-        cluster_info["description"]= cluster_description if cluster_description else ""
-        cluster_info["terminate_on_idle"]= 1 if terminate_on_idle else 0
-        cluster_info["time_to_idle"]= time_to_idle
+        cluster_info = {}
+        cluster_info["type"] = cluster_type
+        cluster_info["nodes"] = nodes
+        cluster_info["name"] = cluster_name if cluster_name else ""
+        cluster_info["description"] = cluster_description if cluster_description else ""
+        cluster_info["terminate_on_idle"] = 1 if terminate_on_idle else 0
+        cluster_info["time_to_idle"] = time_to_idle
         method_path = 'clusters'
-        url = self._join_url( method_path )
-        resp = self.post(url,cluster_info)
-        cluster =  Cluster.new_from_dict(resp, h=self)
+        url = self._join_url(method_path)
+        resp = self.post(url, cluster_info)
+        cluster = Cluster.new_from_dict(resp, h=self)
 
         return cluster
 
     def get_jobs(self):
         method_path = 'jobs'
-        url = self._join_url(method_path )
+        url = self._join_url(method_path)
         resp = self.get(url)
 
-        jobs =  [Job.new_from_dict(item, h=self) for item in resp]
+        jobs = [Job.new_from_dict(item, h=self) for item in resp]
 
         return jobs
 
-    def get_job(self,id):
-        method_path = 'jobs/%s'%(str(id))
-        url = self._join_url( method_path )
-        resp =self.get(url)
-        job =  Job.new_from_dict(resp, h=self)
+    def get_job(self, id):
+        method_path = 'jobs/%s' % (str(id))
+        url = self._join_url(method_path)
+        resp = self.get(url)
+        job = Job.new_from_dict(resp, h=self)
 
         return job
 
-    def stop_job(self,id):
-        method_path = 'jobs/%s'%(str(id))
-        url = self._join_url( method_path )
+    def stop_job(self, id):
+        method_path = 'jobs/%s' % (str(id))
+        url = self._join_url(method_path)
         resp = self.delete(url)
 
         return resp
 
     def add_job(self, cluster_id, package_id, vars={}, dynamic_vars={}):
         job_info = {}
-        job_info["cluster_id"]= cluster_id
-        job_info["package_id"]= package_id
-        job_info["variables"]= vars
-        job_info["dynamic_variables"]= dynamic_vars
+        job_info["cluster_id"] = cluster_id
+        job_info["package_id"] = package_id
+        job_info["variables"] = vars
+        job_info["dynamic_variables"] = dynamic_vars
 
         method_path = 'jobs'
-        url = self._join_url( method_path )
-        resp = self.post(url,job_info)
-        job =  Job.new_from_dict(resp, h=self)
+        url = self._join_url(method_path)
+        resp = self.post(url, job_info)
+        job = Job.new_from_dict(resp, h=self)
 
         return job
 
     def get_account_limits(self):
 
         method_path = 'rate_limit_status'
-        url = self._join_url( method_path )
+        url = self._join_url(method_path)
         resp = self.get(url)
 
-        limit =  AccountLimits.new_from_dict(resp['limits'], h=self)
+        limit = AccountLimits.new_from_dict(resp['limits'], h=self)
 
         return limit
 
