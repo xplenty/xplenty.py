@@ -67,3 +67,6 @@ target/
 [Ll]ib
 [Ss]cripts
 pyvenv.cfg
+
+# system environment variables
+.env
