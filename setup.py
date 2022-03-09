@@ -24,7 +24,7 @@ PACKAGE_DESCRIPTION = 'Xplenty API Python SDK'
 PACKAGE_INCLUDE_PACKAGE_DATA = True
 PACKAGE_DATA_FILES = []
 PACKAGE_CLASSIFIERS = ['Programming Language :: Python :: 3']
-PYTHON_REQUIRES = '==3.7.*'
+PYTHON_REQUIRES = '>=3.7.*'
 
 with open(readme_filename) as f:
     PACKAGE_LONG_DESCRIPTION = f.read()
