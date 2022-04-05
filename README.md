@@ -118,6 +118,13 @@ package = client.get_package(id)
 print package.name
 ```
 
+Optionally get the packages definition JSON as a string.
+```python
+id = 85
+package = client.get_package(id, include_flow=True)
+print package.name
+```
+
 ## Contributing
 
 1. Fork it
