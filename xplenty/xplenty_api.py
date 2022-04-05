@@ -253,7 +253,8 @@ class Connection(BaseModel):
     """Xplenty Connection."""
 
     _strs = ['name', 'url', 'username', 
-                'unique_id', 'username', 'type']
+                'unique_id', 'username', 'type',
+                'database', 'host', 'region']
     _ints = ['id']
     _floats = []
     _dates = ['created_at', 'updated_at']
