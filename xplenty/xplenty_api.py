@@ -223,7 +223,7 @@ class AccountLimits(BaseModel):
 class Package(BaseModel):
     """Xplenty Package."""
 
-    _strs = ['name', 'description', 'url','data_flow_json']
+    _strs = ['name', 'description', 'url', 'data_flow_json']
     _ints = ['id', 'owner_id']
     _floats = []
     _dates = ['created_at', 'updated_at']
@@ -253,7 +253,7 @@ class Connection(BaseModel):
     """Xplenty Connection."""
 
     _strs = ['name', 'url', 'username', 
-                'unique_id', 'username', 'type',
+                'unique_id', 'type',
                 'database', 'host', 'region']
     _ints = ['id']
     _floats = []
