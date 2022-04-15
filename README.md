@@ -75,7 +75,7 @@ This method retrieves information for a connection, according to the given conne
 ```python
 conn_id = 235
 conn_type = 'bigquery'
-conn = client.get_connection(conn_type, job_id)
+conn = client.get_connection(conn_type, conn_id)
 print conn.name
 ```
 ### Run a Job
