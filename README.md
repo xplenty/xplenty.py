@@ -59,6 +59,25 @@ id = 85
 cluster = client.terminate_cluster(id)
 print cluster.status
 ```
+### List All Connections
+
+This method returns the list of connections that were created by users in your account.
+You can use this information to display your connections and their properties.
+```python
+connections = client.connections
+print "Number of connections:",len(connections)
+for connection in connections:
+    print connection.id, connection.name, connection.created_at
+```
+### Get Connection Information
+
+This method retrieves information for a connection, according to the given connection Type and ID.
+```python
+conn_id = 235
+conn_type = 'bigquery'
+conn = client.get_connection(conn_type, conn_id)
+print conn.name
+```
 ### Run a Job
 
 This method creates a new job and triggers it to run. The job performs the series of data processing tasks that are defined in the job's package. Unless the job encounters an error or is terminated by the user, it will run until it completes its tasks on all of the input data. Save the job ID value returned in the response "id" field. You will use the value to refer to this job in subsequent API calls.
@@ -115,6 +134,13 @@ This method returns the details of the package with the given ID.
 ```python
 id = 85
 package = client.get_package(id)
+print package.name
+```
+
+Optionally get the packages definition JSON as a string.
+```python
+id = 85
+package = client.get_package(id, include_flow=True)
 print package.name
 ```
 

@@ -223,7 +223,7 @@ class AccountLimits(BaseModel):
 class Package(BaseModel):
     """Xplenty Package."""
 
-    _strs = ['name', 'description', 'url']
+    _strs = ['name', 'description', 'url','data_flow_json']
     _ints = ['id', 'owner_id']
     _floats = []
     _dates = ['created_at', 'updated_at']
@@ -248,6 +248,21 @@ class Schedule(BaseModel):
 
     def __repr__(self):
         return "<Schedule '{0}'>".format(self.name)
+
+class Connection(BaseModel):
+    """Xplenty Connection."""
+
+    _strs = ['name', 'url', 'username', 
+                'unique_id', 'username', 'type',
+                'database', 'host', 'region']
+    _ints = ['id']
+    _floats = []
+    _dates = ['created_at', 'updated_at']
+    _dicts = []
+    _pks = ['id']
+
+    def __repr__(self):
+        return "<Connection '{0}'>".format(self.name)
 
 
 class RequestWithMethod(Request):
@@ -410,6 +425,22 @@ class XplentyClient(object):
 
         return limit
 
+    def get_connections(self):
+        method_path = 'connections'
+        url = self._join_url(method_path)
+        resp = self.get(url)
+        connection = [Connection.new_from_dict(item, h=self) for item in resp]
+
+        return connection
+
+    def get_connection(self, conn_type, id):
+        method_path = 'connections/%s/%s' % (str(conn_type), str(id))
+        url = self._join_url(method_path)
+        resp = self.get(url)
+        connection = Connection.new_from_dict(resp, h=self)
+
+        return connection
+
     def get_packages(self, offset=0, limit=20):
         method_path = 'packages?offset=%d&limit=%d' % (offset, limit)
         url = self._join_url(method_path)
@@ -418,8 +449,10 @@ class XplentyClient(object):
 
         return packages
 
-    def get_package(self, id):
+    def get_package(self, id, include_flow=False):
         method_path = 'packages/%s' % id
+        if include_flow:
+            method_path += '?include=flow'
         url = self._join_url(method_path)
         resp = self.get(url)
         package = Package.new_from_dict(resp, h=self)
@@ -453,6 +486,10 @@ class XplentyClient(object):
     @property
     def packages(self):
         return self.get_packages()
+
+    @property
+    def connections(self):
+        return self.get_connections()
 
     @property
     def schedules(self):
