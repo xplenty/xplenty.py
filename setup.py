@@ -14,7 +14,7 @@ def get_project_path(*args):
 
 
 PACKAGE_NAME = 'xplenty'
-PACKAGE_VERSION = '3.2.0'
+PACKAGE_VERSION = '3.2.1'
 PACKAGE_AUTHOR = 'Xplenty'
 PACKAGE_AUTHOR_EMAIL = 'opensource@xplenty.com'
 PACKAGE_URL = 'https://github.com/xplenty/xplenty.py'
